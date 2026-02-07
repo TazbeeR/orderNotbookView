@@ -28,7 +28,7 @@ body, html {
     height: 5vh;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-around;
     padding: 0 2rem;
     background: var(--nav);
     border-bottom: 1px solid #334155;
@@ -143,6 +143,8 @@ body, html {
 
 /* Zmień style przycisków na style dla linków w navbarze */
 .nav-buttons a {
+    /*display: flex;*/
+    /*justify-content: center;*/
     text-decoration: none;
     color: #94a3b8;
     margin-left: 20px;
@@ -957,4 +959,25 @@ body, html {
     white-space: nowrap; /* Zapobiega łamaniu tekstu w przycisku */
     height: 38px;        /* Dopasuj do wysokości swoich inputów */
     padding: 0 15px;
+}
+
+.form-grid-spices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+}
+
+.form-input.half-width {
+    flex: 1;
+    min-width: 120px;
+}
+
+.bottom-row {
+    display: flex;
+    width: 100%;
+    gap: 10px;
+    align-items: flex-end;
+    margin-top: 5px;
 }

@@ -1,14 +1,15 @@
 import { configureStore, createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+const baseURL = process.env.REACT_APP_API_URL;
+
 // Async thunk for fetching customers
 export const fetchCustomers = createAsyncThunk(
     'orders/fetchCustomers',
     async () => {
-        const response = await fetch('https://twoja-strona.pl/customer/list');
+        const response = await fetch(`${baseURL}/customer/list`);
         return await response.json();
     }
 );
-
 const ordersSlice = createSlice({
     name: 'orders',
     initialState: {
@@ -31,10 +32,23 @@ const ordersSlice = createSlice({
             state.previousOrders = [];
         }
     },
+    // extraReducers: (builder) => {
+    //     builder.addCase(fetchCustomers.fulfilled, (state, action) => {
+    //         state.customers = action.payload;
+    //     });
+    // }
     extraReducers: (builder) => {
-        builder.addCase(fetchCustomers.fulfilled, (state, action) => {
-            state.customers = action.payload;
-        });
+        builder
+            .addCase(fetchCustomers.pending, (state) => {
+                state.status = 'loading'; // Ustawiamy status ładowania
+            })
+            .addCase(fetchCustomers.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.customers = action.payload;
+            })
+            .addCase(fetchCustomers.rejected, (state) => {
+                state.status = 'failed';
+            });
     }
 });
 
