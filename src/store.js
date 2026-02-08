@@ -1,7 +1,7 @@
 import { configureStore, createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 const baseURL = process.env.REACT_APP_API_URL;
-
+const generateId = () => Math.random().toString(36).substr(2, 9);
 // Async thunk for fetching customers
 export const fetchCustomers = createAsyncThunk(
     'orders/fetchCustomers',
@@ -16,7 +16,10 @@ const ordersSlice = createSlice({
         customers: [],
         selectedCustomer: null,
         previousOrders: [], // This would ideally come from another API call based on customer ID
-        status: 'idle'
+        status: 'idle',
+        currentOrder:{
+            items: [],
+        }
     },
     reducers: {
         selectCustomer: (state, action) => {
@@ -27,16 +30,40 @@ const ordersSlice = createSlice({
                 { id: 85, date: '2026-01-15', total: '120.00 PLN' }
             ].sort((a, b) => new Date(b.date) - new Date(a.date));
         },
+        addItemToOrder: (state, action) => {
+            const newItem = {
+                ...action.payload,
+                cartId: generateId(),
+                addedAt: new Date().toISOString()
+            };
+            state.currentOrder.items.push(newItem);
+        },
+
+        removeItemFromOrder: (state, action) => {
+            state.currentOrder.items = state.currentOrder.items.filter(item => item.cartId !== action.payload);
+        },
+
+        updateOrderItem: (state, action) => {
+            const{ cartId, updateData } = action.payload;
+            const index = state.currentOrder.items.findIndex(item => item.cartId === cartId);
+            if (index !== -1) {
+                state.currentOrder.items[index] = { ...state.currentOrder.items[index], ...updateData };
+            }
+        },
+
+        loadOrderToEdit: (state, action) => {
+            state.currentOrder.items = action.payload;
+            state.selectedCustomer = action.payload.customerId;
+        },
+
         resetOrderForm: (state) => {
             state.selectedCustomer = null;
             state.previousOrders = [];
-        }
+            state.currentOrder = {
+                items: [],
+            };
+        },
     },
-    // extraReducers: (builder) => {
-    //     builder.addCase(fetchCustomers.fulfilled, (state, action) => {
-    //         state.customers = action.payload;
-    //     });
-    // }
     extraReducers: (builder) => {
         builder
             .addCase(fetchCustomers.pending, (state) => {
@@ -52,14 +79,21 @@ const ordersSlice = createSlice({
     }
 });
 
-// Zostawiam oryginalny viewSlice dla kompatybilności z Twoim kodem
 const viewSlice = createSlice({
     name: 'view',
     initialState: { current: 'home' },
     reducers: { setView: (state, action) => { state.current = action.payload; } }
 });
 
-export const { selectCustomer, resetOrderForm } = ordersSlice.actions;
+export const {
+    selectCustomer,
+    resetOrderForm,
+    addItemToOrder,
+    removeItemFromOrder,
+    updateOrderItem,
+    loadOrderToEdit,
+} = ordersSlice.actions;
+
 export const { setView } = viewSlice.actions;
 
 export const store = configureStore({

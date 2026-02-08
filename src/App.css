@@ -981,3 +981,133 @@ body, html {
     align-items: flex-end;
     margin-top: 5px;
 }
+
+/* --- KOLORY I ZMIENNE --- */
+:root {
+    --slate-300: #cbd5e1;
+    --slate-400: #94a3b8;
+    --slate-500: #64748b;
+    --slate-700: #334155;
+    --slate-800: #1e293b;
+    --slate-900: #0f172a;
+    --emerald-400: #34d399;
+    --blue-400: #60a5fa;
+    --blue-500: #3b82f6;
+    --red-400: #f87171;
+    --red-500: #ef4444;
+}
+
+/* --- KONTENER POZYCJI (Wiersz) --- */
+.group {
+    display: flex;
+    flex-direction: column;
+}
+
+.border-b { border-bottom: 1px solid; }
+.border-slate-700 { border-color: var(--slate-700); }
+.py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+
+.hover\:bg-slate-800\/50:hover {
+    background-color: rgba(30, 41, 59, 0.5);
+}
+
+.transition-colors {
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+/* --- UKŁAD I TYPOGRAFIA --- */
+.flex { display: flex; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 0.75rem; }
+.gap-4 { gap: 1rem; }
+.flex-1 { flex: 1 1 0%; }
+.shrink-0 { flex-shrink: 0; }
+.whitespace-nowrap { white-space: nowrap; }
+.overflow-hidden { overflow: hidden; }
+.truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.text-sm { font-size: 0.875rem; }
+.text-xs { font-size: 0.75rem; }
+.text-\[10px\] { font-size: 10px; }
+.font-bold { font-weight: 700; }
+.font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+.italic { font-style: italic; }
+
+/* --- KOLORY TEKSTU --- */
+.text-white { color: #ffffff; }
+.text-accent { color: var(--accent); }
+.text-slate-300 { color: var(--slate-300); }
+.text-slate-400 { color: var(--slate-400); }
+.text-slate-500 { color: var(--slate-500); }
+.text-emerald-400 { color: var(--emerald-400); }
+.text-blue-400 { color: var(--blue-400); }
+.text-red-400 { color: var(--red-400); }
+
+/* --- TŁA I RAMKI --- */
+.bg-slate-900\/50 { background-color: rgba(15, 23, 42, 0.5); }
+.bg-blue-500\/10 { background-color: rgba(59, 130, 246, 0.1); }
+.bg-red-500\/10 { background-color: rgba(239, 68, 68, 0.1); }
+.px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+.py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+.py-0\.5 { padding-top: 0.125rem; padding-bottom: 0.125rem; }
+.rounded { border-radius: 0.25rem; }
+.border { border: 1px solid; }
+
+/* --- PRZYCISKI I HOVERY --- */
+.hover\:bg-blue-500:hover { background-color: var(--blue-500); }
+.hover\:bg-red-500:hover { background-color: var(--red-500); }
+.hover\:text-white:hover { color: #ffffff; }
+
+.transition-all {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.max-w-\[200px\] { max-width: 200px; }
+
+/* --- LAYOUT & SPACING --- */
+.w-full { width: 100%; }
+.mt-1 { margin-top: 0.25rem; }
+.pt-1 { padding-top: 0.25rem; }
+.mr-1 { margin-right: 0.25rem; }
+
+/* --- BORDERS --- */
+.border-t {
+    border-top: 1px solid;
+}
+
+/* Kolor slate-700 z 50% przezroczystością */
+.border-slate-700\/50 {
+    border-color: rgba(51, 65, 85, 0.5);
+}
+
+/* --- TYPOGRAPHY --- */
+.text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem;
+}
+
+.text-slate-400 {
+    color: #94a3b8;
+}
+
+.italic {
+    font-style: italic;
+}
+
+.leading-tight {
+    line-height: 1.25;
+}
+
+/* Opcjonalne: Styl dla samej ikony dymka, aby nie była zbyt jaskrawa */
+.mini-card p span {
+    opacity: 0.7;
+    filter: grayscale(100%);
+    font-style: normal;
+}
