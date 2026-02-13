@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 
 const HogCasingForm = ({ hogCasings, onAdd, initialData }) => {
     const initialFormState = {
-        sort: 'Hoffa',
+        sort: 'Hoffa', // Set a default value to prevent it from being empty
         caliber1: '',
-        origin1: 'PL',
+        origin1: 'CH',
         caliber2: '',
-        origin2: 'PL',
+        origin2: 'CH',
         quantity: '',
         price: '',
         description: '',
@@ -32,6 +32,10 @@ const HogCasingForm = ({ hogCasings, onAdd, initialData }) => {
     };
 
     const handleSubmit = () => {
+        if (!formData.quantity || !formData.price) {
+            alert("Uzupełnij ilość i cenę");
+            return;
+        }
         onAdd(formData);
         setFormData(initialFormState);
     };
@@ -69,7 +73,7 @@ const HogCasingForm = ({ hogCasings, onAdd, initialData }) => {
                 value={formData.origin1}
                 onChange={handleChange}
             >
-                {['PL', 'CH', 'EU'].map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                {['CH', 'PL', 'EU'].map(opt => <option key={opt} value={opt}>{opt}</option>)}
             </select>
 
             <span className="jako-text">jako</span>
@@ -92,7 +96,7 @@ const HogCasingForm = ({ hogCasings, onAdd, initialData }) => {
                 value={formData.origin2}
                 onChange={handleChange}
             >
-                {['PL', 'CH', 'EU'].map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                {['CH', 'PL', 'EU'].map(opt => <option key={opt} value={opt}>{opt}</option>)}
             </select>
 
             <input

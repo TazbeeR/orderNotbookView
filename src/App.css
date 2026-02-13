@@ -1111,3 +1111,79 @@ body, html {
     filter: grayscale(100%);
     font-style: normal;
 }
+
+.calendar-overlay {
+     position: fixed;
+     top: 0;
+     left: 0;
+     width: 100%;
+     height: 100%;
+     background: rgba(0, 0, 0, 0.7);
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     z-index: 1000;
+}
+
+.calendar-modal {
+     background: var(--bg);
+     padding: 25px;
+     border-radius: 8px;
+     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+     text-align: center;
+     color: white;
+}
+
+.calendar-grid {
+     display: grid;
+     grid-template-columns: repeat(7, 1fr);
+     gap: 10px;
+     margin-top: 20px;
+}
+
+.calendar-day-tile {
+     background: var(--card);
+     color: white;
+     border: 1px solid var(--border);
+     border-radius: 6px;
+     padding: 10px 5px;
+     cursor: pointer;
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     transition: background-color 0.2s;
+}
+
+.calendar-day-tile:hover {
+     background: var(--accent);
+}
+
+.calendar-day-tile .day-name {
+     font-size: 0.75em;
+     color: #bbb;
+}
+
+.calendar-day-tile .day-date {
+     font-size: 1.2em;
+     font-weight: bold;
+}
+
+.calendar-day-tile .day-month {
+     font-size: 0.7em;
+     color: #bbb;
+}
+
+.calendar-close-btn {
+     margin-top: 20px;
+     background: #dc2626;
+     color: white;
+     padding: 8px 15px;
+     border: none;
+     border-radius: 6px;
+     cursor: pointer;
+     transition: background-color 0.2s;
+}
+
+.calendar-close-btn:hover {
+     background: #ef4444;
+}

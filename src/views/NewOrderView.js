@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchCustomers, selectCustomer, addItemToOrder, removeItemFromOrder } from '../store';
+import { fetchCustomers, selectCustomer, addItemToOrder, removeItemFromOrder, sendOrder, resetOrderForm } from '../store'; // Import sendOrder and resetOrderForm
+
+import CalendarPicker from '../components/CalendarPicker'; // Import CalendarPicker
 
 import HogCasingForm from '../components/NewOrder/HogCasingForm';
 import SpiceForm from '../components/NewOrder/SpiceForm';
@@ -19,10 +21,13 @@ const NewOrderView = () => {
     const [activeCategory, setActiveCategory] = useState(null);
     const [isAddingNext, setIsAddingNext] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
+    const [showCalendar, setShowCalendar] = useState(false); // State to control calendar visibility
+    const [selectedDeliveryDate, setSelectedDeliveryDate] = useState(null); // State to store selected delivery date
 
-    const { customers, status, selectedCustomer, currentOrder } = useSelector(state => state.orders);
+    const { customers, status, selectedCustomer, currentOrder, orderSubmissionStatus } = useSelector(state => state.orders); // Select orderSubmissionStatus
     const basket = currentOrder?.items || [];
     const isLoading = status === 'loading';
+    const isSubmittingOrder = orderSubmissionStatus === 'pending';
 
     // --- LOGIKA ---
 
@@ -51,13 +56,21 @@ const NewOrderView = () => {
             case 'wieprzowe':
                 fetch(`${baseURL}/hogcasing/list`)
                     .then(res => res.json())
-                    .then(data => setHogCasings(data))
+                    .then(data => {
+                        // Sort by caliber numerically
+                        const sortedData = [...data].sort((a, b) => parseInt(a.caliber, 10) - parseInt(b.caliber, 10));
+                        setHogCasings(sortedData);
+                    })
                     .catch(err => console.error("Błąd wieprzowe:", err));
                 break;
             case 'baranie':
                 fetch(`${baseURL}/sheepcasing/list`)
                     .then(res => res.json())
-                    .then(data => setSheepCasings(data))
+                    .then(data => {
+                        // Sort by caliber numerically
+                        const sortedData = [...data].sort((a, b) => parseInt(a.caliber, 10) - parseInt(b.caliber, 10));
+                        setSheepCasings(sortedData);
+                    })
                     .catch(err => console.error("Błąd baranie:", err));
                 break;
             default:
@@ -87,6 +100,45 @@ const NewOrderView = () => {
         setIsAddingNext(false);
         setEditingItem(null);
     };
+
+    // New function to handle order submission after date selection
+    const submitFinalOrder = async (deliveryDate) => {
+        const finalOrder = {
+            customerId: selectedCustomer,
+            items: basket,
+            status: false, // Default value as requested
+            deliveryDate: deliveryDate,
+            orderDate: new Date().toISOString(), // Automatically set current date
+        };
+
+        const resultAction = await dispatch(sendOrder(finalOrder));
+
+        if (sendOrder.fulfilled.match(resultAction)) {
+            alert('Zamówienie zostało pomyślnie wysłane!\n\nObiekt wysłany do API:\n' + JSON.stringify(finalOrder, null, 2));
+        } else {
+            alert(`Błąd podczas wysyłania zamówienia: ${resultAction.payload || 'Nieznany błąd'}`);
+        }
+        setShowCalendar(false); // Hide calendar after submission attempt
+    };
+
+    const handleCompleteOrder = async () => {
+        if (!selectedCustomer) {
+            alert('Proszę wybrać klienta przed zakończeniem zamówienia.');
+            return;
+        }
+        if (basket.length === 0) {
+            alert('Koszyk jest pusty. Dodaj produkty przed zakończeniem zamówienia.');
+            return;
+        }
+        // Show calendar for date selection
+        setShowCalendar(true);
+    };
+
+    const handleDateSelect = (date) => {
+        setSelectedDeliveryDate(date);
+        submitFinalOrder(date);
+    };
+
 
     // --- RENDER ---
     return (
@@ -139,25 +191,30 @@ const NewOrderView = () => {
                             <div className="items-list">
                                 {basket.map((item) => (
                                     <div key={item.cartId} className="group flex flex-col border-b border-slate-700 py-2 hover:bg-slate-800/50 transition-colors">
-                                        <div className="flex items-center justify-between gap-4 w-full">
-                                            <div className="flex items-center flex-nowrap whitespace-nowrap overflow-hidden text-sm gap-2">
-                                                {(item.type === 'hog' || item.type === 'sheep') ? (
-                                                    <div className="flex items-center gap-1">
-                                                        <span className="font-bold text-accent">{item.sort}</span>
-                                                        <span className="text-slate-300">{item.caliber1}{item.origin1}</span>
-                                                        <span className="text-slate-500 text-xs">→</span>
-                                                        <span className="text-slate-300">{item.caliber2}{item.origin2}</span>
-                                                    </div>
-                                                ) : (
-                                                    <span className="font-bold text-accent">{item.name}</span>
-                                                )}
-
+                                                                                    <div className="flex items-center justify-between gap-4 w-full">
+                                                                                        <div className="flex items-center flex-nowrap whitespace-nowrap overflow-hidden text-base gap-3">
+                                                                                            {(item.type === 'hog' || item.type === 'sheep') ? (
+                                                                                                <div className="flex items-center gap-3">
+                                                                                                    <span className="font-bold text-accent">{item.sort}</span>
+                                                                                                    {item.grade && <span className="font-bold text-accent">{item.grade}</span>} {/* Display grade here */}
+                                                                                                    <span className="text-slate-300">{item.caliber1}{item.origin1}</span>
+                                                                                                    <span className="text-slate-500 text-xs">→</span>
+                                                                                                    <span className="text-slate-300">{item.caliber2}{item.origin2}</span>
+                                                                                                </div>
+                                                                                            ) : (
+                                                                                                <span className="font-bold text-accent">{item.name}</span>
+                                                                                            )}
                                                 <div className="flex items-center gap-3 bg-slate-900/50 px-2 py-0.5 rounded border border-slate-700">
                                                     <span className="text-white font-mono">
-                                                        <span className="text-slate-500 text-xs text-uppercase mr-1">QTY:</span>{item.quantity}
+                                                        {item.type === 'spice' ? (
+                                                            <span className="text-slate-500 text-xs text-uppercase mr-1">{item.unit}</span>
+                                                        ) : (
+                                                            <span className="text-slate-500 text-xs text-uppercase mr-1">QTY:</span>
+                                                        )}
+                                                        {item.quantity}
                                                     </span>
                                                     <span className="text-emerald-400 font-mono">
-                                                        {item.price}<span className="text-[10px] ml-0.5">PLN</span>
+                                                        {item.price != null && !isNaN(item.price) ? parseFloat(item.price).toFixed(2) : 'N/A'}<span className="text-[10px] ml-0.5">PLN</span>
                                                     </span>
                                                 </div>
                                             </div>
@@ -199,8 +256,11 @@ const NewOrderView = () => {
                                     <button
                                         className="card-button"
                                         style={{ background: '#10b981', color: 'white', flex: 1 }}
-                                        onClick={() => alert('Zamówienie gotowe do wysłania!')}
-                                    >✅ ZAKOŃCZ ZAMÓWIENIE</button>
+                                        onClick={handleCompleteOrder} // Bind to new handler
+                                        disabled={isSubmittingOrder} // Disable while submitting
+                                    >
+                                        {isSubmittingOrder ? 'WYSYŁANIE...' : '✅ ZAKOŃCZ ZAMÓWIENIE'}
+                                    </button>
                                 </div>
                             )}
                         </div>
@@ -270,6 +330,10 @@ const NewOrderView = () => {
                         </div>
                     )}
                 </div>
+            )}
+            {/* Conditional CalendarPicker Render */}
+            {showCalendar && (
+                <CalendarPicker onSelectDate={handleDateSelect} onClose={() => setShowCalendar(false)} />
             )}
         </div>
     );

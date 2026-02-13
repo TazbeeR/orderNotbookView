@@ -3,11 +3,12 @@ import React, { useState, useEffect } from 'react';
 const SheepCasingForm = ({ sheepCasings, onAdd, initialData }) => {
     // 1. Definicja początkowego stanu formularza
     const initialFormState = {
-        sort: 'Akif',
+        sort: 'Akif', // Set a default value to prevent it from being empty
+        grade: 'AB', // New field with default 'AB'
         caliber1: '',
-        origin1: 'PL',
+        origin1: 'CH',
         caliber2: '',
-        origin2: 'PL',
+        origin2: 'CH',
         quantity: '',
         price: '',
         description: '',
@@ -55,6 +56,18 @@ const SheepCasingForm = ({ sheepCasings, onAdd, initialData }) => {
                 onChange={handleChange}
             >
                 {['Akif', 'Bilal', 'Chiny'].map(opt => (
+                    <option key={opt} value={opt}>{opt}</option>
+                ))}
+            </select>
+
+            {/* New grade select */}
+            <select
+                className="select-mini"
+                name="grade"
+                value={formData.grade}
+                onChange={handleChange}
+            >
+                {['A', 'AB', 'B', 'BC'].map(opt => (
                     <option key={opt} value={opt}>{opt}</option>
                 ))}
             </select>
